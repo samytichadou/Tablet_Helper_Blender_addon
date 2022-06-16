@@ -1,1 +1,1 @@
-# Tablet_Helper_Blender_addon
+# Tablet Helper Blender addon
