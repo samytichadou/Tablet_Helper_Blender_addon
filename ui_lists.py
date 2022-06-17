@@ -7,7 +7,10 @@ class TABLETH_UL_action_slots(bpy.types.UIList):
 
 class TABLETH_UL_command_slots(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
-        layout.label(text=item.command)
+        if item.name:
+            layout.label(text=item.name)
+        else:
+            layout.label(text=item.command)
 
 
 ### REGISTER ---

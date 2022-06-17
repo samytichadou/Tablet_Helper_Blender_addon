@@ -5,23 +5,34 @@ from .addons_prefs import get_addon_preferences
 
 
 def draw_gui(context, container):
-    commands = context.scene.tableth_actions
+    scn = context.scene
+    commands = scn.tableth_actions
     if commands:
         col=container.column(align=True)
         idx=0
         for c in commands:
+            row=col.row(align=True)
+            if scn.tableth_recording!=-1:
+                if scn.tableth_recording==idx:
+                    row.alert=True
+                    op=row.operator("tableth.recording", text="", icon="REC")
+                    op.action="STOP"
+                    op=row.operator("tableth.recording", text="", icon="LOOP_BACK")
+                    op.action="RESET"
+                    row=row.row()
+                    row.enabled=False
             if c.icon:
                 try:
-                    op=col.operator("tableth.execute_action", text=c.name, icon=c.icon)
+                    op=row.operator("tableth.execute_action", text=c.name, icon=c.icon)
                 except TypeError:
-                    op=col.operator("tableth.execute_action", text=c.name)
+                    op=row.operator("tableth.execute_action", text=c.name)
             else:
-                op=col.operator("tableth.execute_action", text=c.name)
+                op=row.operator("tableth.execute_action", text=c.name)
             op.index=idx
             idx+=1
     else:
         container.label(text="No commands", icon="INFO")
-    container.operator("tableth.manage_commands_popup", text="Commands", icon="TOOL_SETTINGS")
+    container.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
 
 
 # SIDEBAR PANEL
@@ -78,16 +89,34 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
 
         if active_action:
             subbox=box.box()
-            subbox.label(text="Action Settings", icon="SETTINGS")
             col=subbox.column(align=True)
+            col.label(text="Action Settings", icon="SETTINGS")
+            col.separator()
             col.prop(active_action, "name")
             col.prop(active_action, "description")
             col.prop(active_action, "context")
             col.prop(active_action, "icon")
+
             # Command list
             idx = active_action.command_index
             col.separator()
             col.label(text="Commands Settings", icon="FILE_SCRIPT")
+            col.separator()
+
+            row=col.row(align=True)
+            if scn.tableth_recording==-1:
+                text="Start Recording"
+                action="START"
+            else:
+                text="Stop Recording"
+                action="STOP"
+            op=row.operator("tableth.recording", text=text, icon="REC")
+            op.index=action_idx
+            op.action=action
+            if scn.tableth_recording!=-1:
+                op=row.operator("tableth.recording", text="", icon="LOOP_BACK")
+                op.action="RESET"
+
             row=col.row(align=False)
             row.template_list("TABLETH_UL_command_slots", "", active_action, "commands", active_action, "command_index", rows=3)
             subcol=row.column(align=True)
@@ -99,6 +128,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
             if idx!=-1 and idx<len(active_action.commands):
                 active_command = active_action.commands[idx]
                 col.prop(active_command, "command")
+                col.prop(active_command, "name")
 
     def execute(self, context):
         return {'FINISHED'}

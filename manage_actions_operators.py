@@ -1,7 +1,7 @@
 import bpy
 
 
-class TABLETH_manage_actions(bpy.types.Operator):
+class TABLETH_OT_manage_actions(bpy.types.Operator):
     bl_idname = "tableth.manage_actions"
     bl_label = "Create Command"
 
@@ -52,7 +52,7 @@ class TABLETH_manage_actions(bpy.types.Operator):
 ### REGISTER ---
 
 def register():
-    bpy.utils.register_class(TABLETH_manage_actions)
+    bpy.utils.register_class(TABLETH_OT_manage_actions)
 
 def unregister():
-    bpy.utils.unregister_class(TABLETH_manage_actions)
+    bpy.utils.unregister_class(TABLETH_OT_manage_actions)

@@ -19,9 +19,11 @@ def register():
     bpy.types.Scene.tableth_actions = \
         bpy.props.CollectionProperty(type=TABLETH_PR_action_collection, name="Tablet Helper Commands")
     bpy.types.Scene.tableth_action_index = bpy.props.IntProperty(min=-1, default=-1)
+    bpy.types.Scene.tableth_recording = bpy.props.IntProperty(min=-1, default=-1)
 
 def unregister():
     bpy.utils.unregister_class(TABLETH_PR_commands)
     bpy.utils.unregister_class(TABLETH_PR_action_collection)
     del bpy.types.Scene.tableth_actions
     del bpy.types.Scene.tableth_action_index
+    del bpy.types.Scene.tableth_recording

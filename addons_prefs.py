@@ -15,11 +15,11 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
         )
 
     widget_menu : bpy.props.BoolProperty(
-        name = 'widget', 
+        name = 'Widget', 
         )
 
     popup_panel : bpy.props.BoolProperty(
-        name = 'Sidebar Panel', 
+        name = 'Popup Panel', 
         )
 
     def draw(self, context):       

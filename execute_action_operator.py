@@ -9,14 +9,20 @@ class TABLETH_execute_action(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        scn = context.scene
+        action_idx = scn.tableth_action_index
+        actions = scn.tableth_actions
+        return action_idx!=-1 and action_idx<len(actions)
 
     def execute(self, context):
         action=context.scene.tableth_actions[self.index]
         commands=action.commands
 
         for c in commands:
-            exec(c.command)
+            try:
+                exec(c.command)
+            except SyntaxError:
+                print("SyntaxError, Avoiding command - %s" % c)
 
         self.report({'INFO'}, "%s Executed" % action.name)
 
