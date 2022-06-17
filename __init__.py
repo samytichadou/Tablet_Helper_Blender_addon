@@ -37,8 +37,10 @@ from . import   (
     addons_prefs,
     gui,
     properties,
-    manage_commands_operators,
-    execute_command_operator,
+    manage_actions_operators,
+    execute_action_operator,
+    ui_lists,
+    manage_commands_operator,
 )
 
 
@@ -49,12 +51,16 @@ def register():
     addons_prefs.register()
     gui.register()
     properties.register()
-    manage_commands_operators.register()
-    execute_command_operator.register()
+    manage_actions_operators.register()
+    execute_action_operator.register()
+    ui_lists.register()
+    manage_commands_operator.register()
 
 def unregister():
     addons_prefs.unregister()
     gui.unregister()
     properties.unregister()
-    manage_commands_operators.unregister()
-    execute_command_operator.unregister()
+    manage_actions_operators.unregister()
+    execute_action_operator.unregister()
+    ui_lists.unregister()
+    manage_commands_operator.unregister()
