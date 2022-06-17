@@ -21,7 +21,7 @@ def draw_gui(context, container):
             idx+=1
     else:
         container.label(text="No commands", icon="INFO")
-    container.operator("tableth.manage_commands_popup", text="Commands", icon="SETTINGS")
+    container.operator("tableth.manage_commands_popup", text="Commands", icon="TOOL_SETTINGS")
 
 
 # SIDEBAR PANEL
@@ -47,12 +47,6 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
     #bl_description = ""
     #bl_options = {"UNDO"}
 
-    tmp_name : bpy.props.StringProperty(name="Name", default="New Action")
-    tmp_description : bpy.props.StringProperty(name="Description")
-    tmp_context : bpy.props.StringProperty(name="Context")
-    tmp_icon : bpy.props.StringProperty(name="Icon")
-
-
     @classmethod
     def poll(cls, context):
         return True
@@ -64,45 +58,47 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
         layout = self.layout
         scn = context.scene
         actions = scn.tableth_actions
-        active_action = actions[scn.tableth_action_index]
+        active_action = None
+        action_idx = scn.tableth_action_index
 
-        # Create
-        box=layout.box()
-        col=box.column(align=True)
-        op=col.operator("tableth.create_action", text="Create Action", icon="PLUS")
-        op.tmp_name=self.tmp_name
-        op.tmp_description=self.tmp_description
-        op.tmp_context=self.tmp_context
-        op.tmp_icon=self.tmp_icon
-        col.prop(self,"tmp_name")
-        col.prop(self,"tmp_description")
-        col.prop(self,"tmp_context")
-        col.prop(self,"tmp_icon")
+        if action_idx!=-1 and action_idx<len(actions):
+            active_action = actions[scn.tableth_action_index]
 
         # List
         box=layout.box()
         col=box.column(align=True)
-        col.label(text="Actions")
-        col.template_list("TABLETH_UL_action_slots", "", scn, "tableth_actions", scn, "tableth_action_index", rows=4)
-        subbox=box.box()
-        col=subbox.column(align=True)
-        col.prop(active_action, "name")
-        col.prop(active_action, "description")
-        col.prop(active_action, "context")
-        col.prop(active_action, "icon")
-        # Command list
-        idx = active_action.command_index
-        row=col.row(align=True)
-        row.template_list("TABLETH_UL_command_slots", "", active_action, "commands", active_action, "command_index", rows=3)
-        col=row.column(align=True)
-        col.operator("tableth.manage_commands",text="",icon="ADD").action="ADD"
-        col.operator("tableth.manage_commands",text="",icon="REMOVE").action="REMOVE"
-        col.operator("tableth.manage_commands",text="",icon="TRIA_UP").action="UP"
-        col.operator("tableth.manage_commands",text="",icon="TRIA_DOWN").action="DOWN"
+        col.label(text="Actions", icon="MEMORY")
+        row=col.row(align=False)
+        row.template_list("TABLETH_UL_action_slots", "", scn, "tableth_actions", scn, "tableth_action_index", rows=4)
+        subcol=row.column(align=True)
+        subcol.operator("tableth.manage_actions",text="",icon="ADD").action="ADD"
+        subcol.operator("tableth.manage_actions",text="",icon="REMOVE").action="REMOVE"
+        subcol.operator("tableth.manage_actions",text="",icon="TRIA_UP").action="UP"
+        subcol.operator("tableth.manage_actions",text="",icon="TRIA_DOWN").action="DOWN"
 
-        if idx!=-1 and idx<len(active_action.commands):
-            active_command = active_action.commands[idx]
-            col.prop(active_command, "command")
+        if active_action:
+            subbox=box.box()
+            subbox.label(text="Action Settings", icon="SETTINGS")
+            col=subbox.column(align=True)
+            col.prop(active_action, "name")
+            col.prop(active_action, "description")
+            col.prop(active_action, "context")
+            col.prop(active_action, "icon")
+            # Command list
+            idx = active_action.command_index
+            col.separator()
+            col.label(text="Commands Settings", icon="FILE_SCRIPT")
+            row=col.row(align=False)
+            row.template_list("TABLETH_UL_command_slots", "", active_action, "commands", active_action, "command_index", rows=3)
+            subcol=row.column(align=True)
+            subcol.operator("tableth.manage_commands",text="",icon="ADD").action="ADD"
+            subcol.operator("tableth.manage_commands",text="",icon="REMOVE").action="REMOVE"
+            subcol.operator("tableth.manage_commands",text="",icon="TRIA_UP").action="UP"
+            subcol.operator("tableth.manage_commands",text="",icon="TRIA_DOWN").action="DOWN"
+
+            if idx!=-1 and idx<len(active_action.commands):
+                active_command = active_action.commands[idx]
+                col.prop(active_command, "command")
 
     def execute(self, context):
         return {'FINISHED'}
