@@ -8,6 +8,7 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
     
     topbar_menu : bpy.props.BoolProperty(
         name = 'Topbar Menu', 
+        default = True
         )
 
     sidebar_panel : bpy.props.BoolProperty(
@@ -18,8 +19,8 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
         name = 'Widget', 
         )
 
-    popup_panel : bpy.props.BoolProperty(
-        name = 'Popup Panel', 
+    popup_menu : bpy.props.BoolProperty(
+        name = 'Popup Menu', 
         )
 
     def draw(self, context):       
@@ -27,9 +28,9 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
 
         row=layout.row(align=True)
         row.prop(self, "topbar_menu")
-        row.prop(self, "sidebar_panel")
         row.prop(self, "widget_menu")
-        row.prop(self, "popup_panel")
+        row.prop(self, "sidebar_panel")
+        row.prop(self, "popup_menu")
 
         # donate
         op=layout.operator("wm.url_open", text="Donate", icon="FUND")

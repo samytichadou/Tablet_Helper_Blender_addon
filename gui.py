@@ -35,9 +35,9 @@ def draw_gui(context, container):
     container.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
 
 
-# SIDEBAR PANEL
-class TABLETH_PT_commands_panel(bpy.types.Panel):
-    bl_label = "Commands"
+# SIDEBAR ACTION PANEL
+class TABLETH_PT_actions_panel(bpy.types.Panel):
+    bl_label = "Actions"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Tablet H"
@@ -46,12 +46,60 @@ class TABLETH_PT_commands_panel(bpy.types.Panel):
     def poll(cls, context):
         return get_addon_preferences().sidebar_panel
 
+    def draw_header(self, context):
+        self.layout.label(text="", icon="MEMORY")
+
     def draw(self, context):
         layout = self.layout
         draw_gui(context, layout)
 
 
-# MANAGE MENU
+# POPOVER ACTION PANEL
+class TABLETH_PT_actions_popover(bpy.types.Panel):
+    bl_label = "Actions"
+    bl_options = {'INSTANCED'}
+    bl_space_type = "VIEW_3D"
+    bl_region_type = 'WINDOW'
+
+    @classmethod
+    def poll(cls, context):
+        return get_addon_preferences().topbar_menu
+
+    def draw(self, context):
+        layout = self.layout
+        draw_gui(context, layout)
+
+
+# POPOVER ACTION CALLER
+def popover_menu(self, context):
+    if get_addon_preferences().topbar_menu:
+        layout = self.layout
+        layout.popover("TABLETH_PT_actions_popover", text="", icon="MEMORY")
+
+
+# POPUP ACTION MENU
+class TABLETH_OT_actions_popup(bpy.types.Operator):
+    bl_idname = "tableth.action_popup"
+    bl_label = "Actions"
+    #bl_description = ""
+    #bl_options = {"UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return get_addon_preferences().popup_menu
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        draw_gui(context, layout)
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+
+# POPUP MANAGE MENU 
 class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
     bl_idname = "tableth.manage_commands_popup"
     bl_label = "Manage Commands"
@@ -137,9 +185,15 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
 ### REGISTER ---
 
 def register():
-    bpy.utils.register_class(TABLETH_PT_commands_panel)
+    bpy.utils.register_class(TABLETH_PT_actions_panel)
+    bpy.utils.register_class(TABLETH_PT_actions_popover)
+    bpy.utils.register_class(TABLETH_OT_actions_popup)
     bpy.utils.register_class(TABLETH_OT_manage_commands_popup)
+    bpy.types.VIEW3D_HT_header.append(popover_menu)
 
 def unregister():
-    bpy.utils.unregister_class(TABLETH_PT_commands_panel)
+    bpy.utils.unregister_class(TABLETH_PT_actions_panel)
+    bpy.utils.unregister_class(TABLETH_PT_actions_popover)
+    bpy.utils.unregister_class(TABLETH_OT_actions_popup)
     bpy.utils.unregister_class(TABLETH_OT_manage_commands_popup)
+    bpy.types.VIEW3D_HT_header.remove(popover_menu)
