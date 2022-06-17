@@ -95,10 +95,10 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
         row=col.row(align=True)
         row.template_list("TABLETH_UL_command_slots", "", active_action, "commands", active_action, "command_index", rows=3)
         col=row.column(align=True)
-        col.operator("tableth.manage_commands",text="",icon="X").action="ADD"
-        col.operator("tableth.manage_commands",text="",icon="X").action="REMOVE"
-        col.operator("tableth.manage_commands",text="",icon="X").action="UP"
-        col.operator("tableth.manage_commands",text="",icon="X").action="DOWN"
+        col.operator("tableth.manage_commands",text="",icon="ADD").action="ADD"
+        col.operator("tableth.manage_commands",text="",icon="REMOVE").action="REMOVE"
+        col.operator("tableth.manage_commands",text="",icon="TRIA_UP").action="UP"
+        col.operator("tableth.manage_commands",text="",icon="TRIA_DOWN").action="DOWN"
 
         if idx!=-1 and idx<len(active_action.commands):
             active_command = active_action.commands[idx]
