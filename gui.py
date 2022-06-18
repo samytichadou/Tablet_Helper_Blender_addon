@@ -1,16 +1,32 @@
 from re import sub
 import bpy
 
-from .addons_prefs import get_addon_preferences
+from .addons_prefs import get_addon_preferences, update_sidepanel_category
 
-
+# COMMON ACTION GUI
 def draw_gui(context, container):
     scn = context.scene
-    commands = scn.tableth_actions
-    if commands:
-        col=container.column(align=True)
+    actions = scn.tableth_actions
+    idx=None
+    if actions:
         idx=0
-        for c in commands:
+        col=container.column(align=True)
+        for a in actions:
+            # Check contexts
+            if a.context_mode:
+                if not a.context_mode==context.mode:
+                    continue
+            if a.context_active_type:
+                if context.active_object:
+                    if not a.context_active_type==context.active_object.type:
+                        continue
+                else:
+                    continue
+            if a.context_workspace:
+                if not a.context_workspace==context.workspace.name:
+                    continue
+            
+            # Display Operators
             row=col.row(align=True)
             if scn.tableth_recording!=-1:
                 if scn.tableth_recording==idx:
@@ -21,17 +37,17 @@ def draw_gui(context, container):
                     op.action="RESET"
                     row=row.row()
                     row.enabled=False
-            if c.icon:
+            if a.icon:
                 try:
-                    op=row.operator("tableth.execute_action", text=c.name, icon=c.icon)
+                    op=row.operator("tableth.execute_action", text=a.name, icon=a.icon)
                 except TypeError:
-                    op=row.operator("tableth.execute_action", text=c.name)
+                    op=row.operator("tableth.execute_action", text=a.name)
             else:
-                op=row.operator("tableth.execute_action", text=c.name)
+                op=row.operator("tableth.execute_action", text=a.name)
             op.index=idx
             idx+=1
-    else:
-        container.label(text="No commands", icon="INFO")
+    if not idx or idx==0:
+        container.label(text="No Actions", icon="INFO")
     container.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
 
 
@@ -40,7 +56,7 @@ class TABLETH_PT_actions_panel(bpy.types.Panel):
     bl_label = "Actions"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Tablet H"
+    bl_category = "TabletH"
 
     @classmethod
     def poll(cls, context):
@@ -106,6 +122,10 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
     #bl_description = ""
     #bl_options = {"UNDO"}
 
+    show_context : bpy.props.BoolProperty(
+        name="Show Context Details",
+        )
+
     @classmethod
     def poll(cls, context):
         return True
@@ -142,8 +162,20 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
             col.separator()
             col.prop(active_action, "name")
             col.prop(active_action, "description")
-            col.prop(active_action, "context")
             col.prop(active_action, "icon")
+            subbox2=col.box()
+            subcol=subbox2.column(align=True)
+            if self.show_context:
+                icon="TRIA_DOWN"
+            else:
+                icon="TRIA_RIGHT"
+            row=subcol.row(align=True)
+            row.prop(self, "show_context", text="", icon=icon, emboss=False)
+            row.label(text="Context")
+            if self.show_context:
+                subcol.prop(active_action, "context_mode", text="Mode")
+                subcol.prop(active_action, "context_active_type", text="Active Type")
+                subcol.prop(active_action, "context_workspace", text="Workspace")
 
             # Command list
             idx = active_action.command_index
@@ -186,6 +218,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
 
 def register():
     bpy.utils.register_class(TABLETH_PT_actions_panel)
+    update_sidepanel_category(None, bpy.context)
     bpy.utils.register_class(TABLETH_PT_actions_popover)
     bpy.utils.register_class(TABLETH_OT_actions_popup)
     bpy.utils.register_class(TABLETH_OT_manage_commands_popup)

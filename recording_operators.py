@@ -22,7 +22,7 @@ def set_override(context):
 
 class TABLETH_OT_recording(bpy.types.Operator):
     bl_idname = "tableth.recording"
-    bl_label = "Start/Stop Recording"
+    bl_label = "Start/Stop/Reset Recording"
 
     action : bpy.props.EnumProperty(items=(
         ('START', 'Start', ""),

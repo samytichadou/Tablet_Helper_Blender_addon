@@ -6,7 +6,9 @@ class TABLETH_PR_commands(bpy.types.PropertyGroup):
 class TABLETH_PR_action_collection(bpy.types.PropertyGroup):
     commands: bpy.props.CollectionProperty(type=TABLETH_PR_commands, name='Commands')
     description: bpy.props.StringProperty(name="Description")
-    context: bpy.props.StringProperty(name="Context")
+    context_mode: bpy.props.StringProperty(name="Context Mode")
+    context_workspace: bpy.props.StringProperty(name="Context Workspace")
+    context_active_type: bpy.props.StringProperty(name="Context Active Type")
     icon: bpy.props.StringProperty(name="Icon")
     command_index : bpy.props.IntProperty(min=-1, default=-1)
 
