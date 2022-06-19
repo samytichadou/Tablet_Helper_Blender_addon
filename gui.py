@@ -187,7 +187,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
                 row=subcol.row()
                 if active_action.context_location!="SPECIFIC":
                     row.enabled=False
-                row.prop(active_action, "context_specific_location", text="Specific Locations")
+                row.prop(active_action, "context_specific_location", text="Specific")
 
             # Command list
             idx = active_action.command_index
