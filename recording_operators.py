@@ -34,13 +34,15 @@ class TABLETH_OT_recording(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         scn = context.scene
-        action_idx = scn.tableth_action_index
-        actions = scn.tableth_actions
+        props = scn.tableth_properties
+        action_idx = props.action_index
+        actions = props.actions
         return action_idx!=-1 and action_idx<len(actions)
 
     def execute(self, context):
         scn=context.scene
-        action=scn.tableth_actions[self.index]
+        props = scn.tableth_properties
+        action = props.actions[self.index]
 
         override, old_area = set_override(context)
 
@@ -50,7 +52,7 @@ class TABLETH_OT_recording(bpy.types.Operator):
             bpy.ops.info.report_delete(override)
             bpy.ops.info.select_all(override, action='DESELECT')
 
-            scn.tableth_recording=self.index
+            props.recording=self.index
             self.report({'INFO'}, "Recording : %s" % action.name)
 
         elif self.action=="STOP":
@@ -71,10 +73,10 @@ class TABLETH_OT_recording(bpy.types.Operator):
                 new_command=action.commands.add()
                 new_command.command=line
 
-            scn.tableth_recording=-1
+            props.recording=-1
             self.report({'INFO'}, "Recorded : %s" % action.name)
 
-        elif self.action=="RESET" and scn.tableth_recording!=-1:
+        elif self.action=="RESET" and props.recording!=-1:
             # Rec infos
             bpy.ops.info.select_all(override, action='SELECT')
             bpy.ops.info.report_delete(override)

@@ -29,20 +29,26 @@ class TABLETH_PR_action_collection(bpy.types.PropertyGroup):
     icon: bpy.props.StringProperty(name="Icon")
     command_index : bpy.props.IntProperty(min=-1, default=-1)
 
+class TABLETH_PR_properties(bpy.types.PropertyGroup):
+    action_index: bpy.props.IntProperty(name='Action Index', min=-1, default=-1)
+    recording: bpy.props.IntProperty(name='Recording Action', min=-1, default=-1)
+
+    actions: bpy.props.CollectionProperty(type=TABLETH_PR_action_collection, name="Tablet Helper Commands")
+
 
 ### REGISTER ---
 
 def register():
     bpy.utils.register_class(TABLETH_PR_commands)
     bpy.utils.register_class(TABLETH_PR_action_collection)
-    bpy.types.Scene.tableth_actions = \
-        bpy.props.CollectionProperty(type=TABLETH_PR_action_collection, name="Tablet Helper Commands")
-    bpy.types.Scene.tableth_action_index = bpy.props.IntProperty(min=-1, default=-1)
-    bpy.types.Scene.tableth_recording = bpy.props.IntProperty(min=-1, default=-1)
+    bpy.utils.register_class(TABLETH_PR_properties)
+
+    bpy.types.Scene.tableth_properties = \
+        bpy.props.PointerProperty(type = TABLETH_PR_properties, name="Tableth Properties")
 
 def unregister():
     bpy.utils.unregister_class(TABLETH_PR_commands)
     bpy.utils.unregister_class(TABLETH_PR_action_collection)
-    del bpy.types.Scene.tableth_actions
-    del bpy.types.Scene.tableth_action_index
-    del bpy.types.Scene.tableth_recording
+    bpy.utils.unregister_class(TABLETH_PR_properties)
+
+    del bpy.types.Scene.tableth_properties

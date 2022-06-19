@@ -18,29 +18,30 @@ class TABLETH_OT_manage_actions(bpy.types.Operator):
 
     def execute(self, context):
         scn = context.scene
-        actions=scn.tableth_actions
+        props = scn.tableth_properties
+        actions = props.actions
 
         if self.action=="ADD":
             new_action=actions.add()
             new_action.name="New Action"
-            scn.tableth_action_index=len(actions)-1
+            props.action_index=len(actions)-1
 
         elif self.action=="REMOVE":
-            if scn.tableth_action_index<=len(actions)-1:
-                actions.remove(scn.tableth_action_index)
-                if scn.tableth_action_index>len(actions)-1:
-                    scn.tableth_action_index-=1
+            if props.action_index<=len(actions)-1:
+                actions.remove(props.action_index)
+                if props.action_index>len(actions)-1:
+                    props.action_index-=1
                 elif len(actions)==0:
-                    scn.tableth_action_index=-1
+                    props.action_index=-1
 
         elif self.action in {"UP", "DOWN"}:
             if self.action=="UP":
-                target = scn.tableth_action_index-1
+                target = props.action_index-1
             else:
-                target = scn.tableth_action_index+1
+                target = props.action_index+1
             if target!=-1 and target<len(actions):
-                actions.move(scn.tableth_action_index, target)
-                scn.tableth_action_index=target
+                actions.move(props.action_index, target)
+                props.action_index=target
 
         # redraw ui
         for area in context.screen.areas:

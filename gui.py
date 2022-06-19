@@ -6,7 +6,8 @@ from .addons_prefs import get_addon_preferences, update_sidepanel_category
 # COMMON ACTION GUI
 def draw_gui(context, container, type):
     scn = context.scene
-    actions = scn.tableth_actions
+    props = scn.tableth_properties
+    actions = props.actions
     idx=None
     if actions:
         idx=0
@@ -33,8 +34,8 @@ def draw_gui(context, container, type):
             
             # Display Operators
             row=col.row(align=True)
-            if scn.tableth_recording!=-1:
-                if scn.tableth_recording==idx:
+            if props.recording!=-1:
+                if props.recording==idx:
                     row.alert=True
                     op=row.operator("tableth.recording", text="", icon="REC")
                     op.action="STOP"
@@ -141,19 +142,20 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         scn = context.scene
-        actions = scn.tableth_actions
+        props = scn.tableth_properties
+        actions = props.actions
         active_action = None
-        action_idx = scn.tableth_action_index
+        action_idx = props.action_index
 
         if action_idx!=-1 and action_idx<len(actions):
-            active_action = actions[scn.tableth_action_index]
+            active_action = actions[props.action_index]
 
         # List
         box=layout.box()
         col=box.column(align=True)
         col.label(text="Actions", icon="MEMORY")
         row=col.row(align=False)
-        row.template_list("TABLETH_UL_action_slots", "", scn, "tableth_actions", scn, "tableth_action_index", rows=4)
+        row.template_list("TABLETH_UL_action_slots", "", props, "actions", props, "action_index", rows=4)
         subcol=row.column(align=True)
         subcol.operator("tableth.manage_actions",text="",icon="ADD").action="ADD"
         subcol.operator("tableth.manage_actions",text="",icon="REMOVE").action="REMOVE"
@@ -194,7 +196,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
             col.separator()
 
             row=col.row(align=True)
-            if scn.tableth_recording==-1:
+            if props.recording==-1:
                 text="Start Recording"
                 action="START"
             else:
@@ -203,7 +205,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
             op=row.operator("tableth.recording", text=text, icon="REC")
             op.index=action_idx
             op.action=action
-            if scn.tableth_recording!=-1:
+            if props.recording!=-1:
                 op=row.operator("tableth.recording", text="", icon="LOOP_BACK")
                 op.action="RESET"
 
