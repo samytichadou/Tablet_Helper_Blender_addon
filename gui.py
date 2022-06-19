@@ -4,7 +4,7 @@ import bpy
 from .addons_prefs import get_addon_preferences, update_sidepanel_category
 
 # COMMON ACTION GUI
-def draw_gui(context, container):
+def draw_gui(context, container, type):
     scn = context.scene
     actions = scn.tableth_actions
     idx=None
@@ -25,6 +25,11 @@ def draw_gui(context, container):
             if a.context_workspace:
                 if not a.context_workspace==context.workspace.name:
                     continue
+            if a.context_location=="SPECIFIC":
+                if type not in a.context_specific_location.lower():
+                    continue
+            elif a.context_location!="ALL" and a.context_location.lower()!=type:
+                continue 
             
             # Display Operators
             row=col.row(align=True)
@@ -67,7 +72,7 @@ class TABLETH_PT_actions_panel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        draw_gui(context, layout)
+        draw_gui(context, layout, "sidebar")
 
 
 # POPOVER ACTION PANEL
@@ -83,7 +88,7 @@ class TABLETH_PT_actions_popover(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        draw_gui(context, layout)
+        draw_gui(context, layout, "topbar")
 
 
 # POPOVER ACTION CALLER
@@ -109,7 +114,7 @@ class TABLETH_OT_actions_popup(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        draw_gui(context, layout)
+        draw_gui(context, layout, "popup")
 
     def execute(self, context):
         return {'FINISHED'}
@@ -176,6 +181,11 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
                 subcol.prop(active_action, "context_mode", text="Mode")
                 subcol.prop(active_action, "context_active_type", text="Active Type")
                 subcol.prop(active_action, "context_workspace", text="Workspace")
+                subcol.prop(active_action, "context_location", text="Location")
+                row=subcol.row()
+                if active_action.context_location!="SPECIFIC":
+                    row.enabled=False
+                row.prop(active_action, "context_specific_location", text="Specific Locations")
 
             # Command list
             idx = active_action.command_index

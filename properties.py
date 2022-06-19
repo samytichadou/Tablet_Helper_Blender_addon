@@ -9,6 +9,23 @@ class TABLETH_PR_action_collection(bpy.types.PropertyGroup):
     context_mode: bpy.props.StringProperty(name="Context Mode")
     context_workspace: bpy.props.StringProperty(name="Context Workspace")
     context_active_type: bpy.props.StringProperty(name="Context Active Type")
+    context_location: bpy.props.EnumProperty(
+        name='Context Location',
+        items={
+            ('ALL', 'All', 'Available in all locations', 1),
+            ('SIDEBAR', 'Sidebar', 'Available in Sidebar Panel', 2),
+            ('TOPBAR', 'Topbar', 'Available in Topbar Popover', 3),
+            ('POPUP', 'Popup', 'Available in Popup Menu', 4),
+            ('TOOL', 'Tool', 'Available in Tool Menu', 5),
+            ('SPECIFIC', 'Specific', 'Available in custom locations', 6),
+        },
+        default='ALL',
+    )
+    context_specific_location: bpy.props.StringProperty(
+        name="Context Specific Locations",
+        description="Custom available locations comma separated\n\
+        In : sidebar, topbar, popup, tool"
+    )
     icon: bpy.props.StringProperty(name="Icon")
     command_index : bpy.props.IntProperty(min=-1, default=-1)
 
