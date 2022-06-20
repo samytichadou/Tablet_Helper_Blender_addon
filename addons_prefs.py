@@ -18,6 +18,12 @@ def update_sidepanel_category(self, context):
 
 class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
     bl_idname = addon_name
+
+    save_folder : bpy.props.StringProperty(
+        name = 'Save Folder',
+        default = "",
+        subtype = "DIR_PATH",
+        )
     
     topbar_menu : bpy.props.BoolProperty(
         name = 'Topbar Menu', 
@@ -44,6 +50,8 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
 
     def draw(self, context):       
         layout = self.layout
+
+        layout.prop(self, "save_folder")
 
         col=layout.column(align=True)
         row=col.row(align=True)

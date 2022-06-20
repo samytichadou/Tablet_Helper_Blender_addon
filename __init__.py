@@ -39,6 +39,7 @@ from . import   (
     properties,
     manage_actions_operators,
     execute_action_operator,
+    save_load_json_operators,
     ui_lists,
     manage_commands_operator,
     recording_operators,
@@ -57,6 +58,7 @@ def register():
     ui_lists.register()
     manage_commands_operator.register()
     recording_operators.register()
+    save_load_json_operators.register()
 
 def unregister():
     addons_prefs.unregister()
@@ -67,3 +69,4 @@ def unregister():
     ui_lists.unregister()
     manage_commands_operator.unregister()
     recording_operators.unregister()
+    save_load_json_operators.unregister()
