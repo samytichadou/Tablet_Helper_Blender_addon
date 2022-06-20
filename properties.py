@@ -43,7 +43,7 @@ def register():
     bpy.utils.register_class(TABLETH_PR_action_collection)
     bpy.utils.register_class(TABLETH_PR_properties)
 
-    bpy.types.Scene.tableth_properties = \
+    bpy.types.WindowManager.tableth_properties = \
         bpy.props.PointerProperty(type = TABLETH_PR_properties, name="Tableth Properties")
 
 def unregister():
@@ -51,4 +51,4 @@ def unregister():
     bpy.utils.unregister_class(TABLETH_PR_action_collection)
     bpy.utils.unregister_class(TABLETH_PR_properties)
 
-    del bpy.types.Scene.tableth_properties
+    del bpy.types.WindowManager.tableth_properties

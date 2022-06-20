@@ -9,13 +9,12 @@ class TABLETH_execute_action(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         actions = props.actions
         return actions
 
     def execute(self, context):
-        action=context.scene.tableth_properties.actions[self.index]
+        action=context.window_manager.tableth_properties.actions[self.index]
         commands=action.commands
 
         for c in commands:

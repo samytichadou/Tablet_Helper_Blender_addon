@@ -33,15 +33,13 @@ class TABLETH_OT_recording(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         action_idx = props.action_index
         actions = props.actions
         return action_idx!=-1 and action_idx<len(actions)
 
     def execute(self, context):
-        scn=context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         action = props.actions[self.index]
 
         override, old_area = set_override(context)

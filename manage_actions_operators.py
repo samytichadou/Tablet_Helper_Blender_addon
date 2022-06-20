@@ -17,8 +17,7 @@ class TABLETH_OT_manage_actions(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         actions = props.actions
 
         if self.action=="ADD":

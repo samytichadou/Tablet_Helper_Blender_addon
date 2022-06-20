@@ -5,8 +5,7 @@ from .addons_prefs import get_addon_preferences, update_sidepanel_category
 
 # COMMON ACTION GUI
 def draw_gui(context, container, type):
-    scn = context.scene
-    props = scn.tableth_properties
+    props = context.window_manager.tableth_properties
     actions = props.actions
     idx=None
     if actions:
@@ -145,8 +144,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
 
     def draw(self, context):
         layout = self.layout
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         actions = props.actions
         active_action = None
         action_idx = props.action_index

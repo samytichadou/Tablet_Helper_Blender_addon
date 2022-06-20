@@ -13,8 +13,7 @@ class TABLETH_OT_manage_commands(bpy.types.Operator):
         ))
 
     def execute(self, context):
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         active_action = props.actions[props.action_index]
         commands = active_action.commands
 

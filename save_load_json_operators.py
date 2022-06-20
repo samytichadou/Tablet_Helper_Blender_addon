@@ -74,13 +74,11 @@ class TABLETH_OT_save_actions(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        scn = context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         return props.actions
 
     def execute(self, context):
-        scn=context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         actions = props.actions
 
         save_folder = get_addon_preferences().save_folder
@@ -113,8 +111,7 @@ class TABLETH_OT_load_actions(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scn=context.scene
-        props = scn.tableth_properties
+        props = context.window_manager.tableth_properties
         actions = props.actions
 
         save_folder = get_addon_preferences().save_folder
