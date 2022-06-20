@@ -4,6 +4,8 @@ import json
 import os
 import pathlib
 
+from bpy.app.handlers import persistent
+
 from .addons_prefs import get_addon_preferences
 
 
@@ -66,6 +68,29 @@ def return_files_with_pattern(directory, pattern):
         if pattern in filename:
             list.append(os.path.join(directory, filename))
     return list
+
+@persistent
+def reload_startup(scene):
+    actions = bpy.data.window_managers[0].tableth_properties.actions
+    save_folder = get_addon_preferences().save_folder
+    # Create folder if needed
+    if not os.path.isdir(save_folder):
+        print("Tablet Helper - No Action to load")
+        return
+
+    # Clear existings
+    actions.clear()
+
+    # Load new
+    action_files=return_files_with_pattern(save_folder, "action")
+    if action_files:
+        for f in action_files:
+            dataset=read_json(f)
+            new_action=actions.add()
+            set_properties_from_dataset(dataset, new_action)
+            for c in dataset["commands"]:
+                new_command=new_action.commands.add()
+                set_properties_from_dataset(c, new_command)
 
 
 class TABLETH_OT_save_actions(bpy.types.Operator):
@@ -146,7 +171,9 @@ class TABLETH_OT_load_actions(bpy.types.Operator):
 def register():
     bpy.utils.register_class(TABLETH_OT_save_actions)
     bpy.utils.register_class(TABLETH_OT_load_actions)
+    bpy.app.handlers.load_post.append(reload_startup)
 
 def unregister():
     bpy.utils.unregister_class(TABLETH_OT_save_actions)
     bpy.utils.unregister_class(TABLETH_OT_load_actions)
+    bpy.app.handlers.load_post.remove(reload_startup)
