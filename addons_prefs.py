@@ -21,7 +21,7 @@ class TABLETH_PT_addon_prefs(bpy.types.AddonPreferences):
 
     save_folder : bpy.props.StringProperty(
         name = 'Save Folder',
-        default = "",
+        default = os.path.join(bpy.utils.user_resource('DATAFILES'), "actions"),
         subtype = "DIR_PATH",
         )
     

@@ -11,9 +11,8 @@ class TABLETH_execute_action(bpy.types.Operator):
     def poll(cls, context):
         scn = context.scene
         props = scn.tableth_properties
-        action_idx = props.action_index
         actions = props.actions
-        return action_idx!=-1 and action_idx<len(actions)
+        return actions
 
     def execute(self, context):
         action=context.scene.tableth_properties.actions[self.index]

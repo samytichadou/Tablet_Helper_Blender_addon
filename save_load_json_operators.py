@@ -1,3 +1,4 @@
+from asyncore import read
 import bpy
 import json
 import os
@@ -14,6 +15,11 @@ def isSerializable(x):
     except (TypeError, OverflowError):
         return False
 
+def read_json(filepath):
+    with open(filepath, "r") as read_file:
+        dataset = json.load(read_file)
+    return dataset
+
 def dataset_from_properties(datasetin, avoid_list=()):
     datasetout = {}
     for p in datasetin.bl_rna.properties:
@@ -22,6 +28,14 @@ def dataset_from_properties(datasetin, avoid_list=()):
                 if isSerializable(getattr(datasetin, p.identifier)):
                     datasetout[p.identifier] = getattr(datasetin, p.identifier)
     return datasetout
+
+def set_properties_from_dataset(datasetin, dataset, avoid_list=()):
+    for prop in datasetin:
+        if prop not in avoid_list:
+            try:
+                setattr(dataset, '%s' % prop, datasetin[prop])
+            except (KeyError, AttributeError, TypeError):
+                pass
 
 def return_action_dataset(action):
     datasetout=dataset_from_properties(action)
@@ -39,13 +53,19 @@ def create_json_file(datas, path) :
         json.dump(datas, write_file, indent=4, sort_keys=False)
 
 def empty_directory(directory, include_pattern=None):
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if include_pattern is not None:
-                if include_pattern in file:
-                    os.remove(os.path.join(root, file))
-            else:
-                os.remove(os.path.join(root, file))
+    for file in os.listdir(directory):
+        if include_pattern is not None:
+            if include_pattern in file:
+                os.remove(os.path.join(directory, file))
+        else:
+            os.remove(os.path.join(directory, file))
+
+def return_files_with_pattern(directory, pattern):
+    list=[]
+    for filename in os.listdir(directory):
+        if pattern in filename:
+            list.append(os.path.join(directory, filename))
+    return list
 
 
 class TABLETH_OT_save_actions(bpy.types.Operator):
@@ -65,7 +85,7 @@ class TABLETH_OT_save_actions(bpy.types.Operator):
 
         save_folder = get_addon_preferences().save_folder
         # Create folder if needed
-        if not os.path.isdir:
+        if not os.path.isdir(save_folder):
             pathlib.Path(save_folder).mkdir(parents=True, exist_ok=True)
         # Empty dir
         else:
@@ -84,10 +104,52 @@ class TABLETH_OT_save_actions(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class TABLETH_OT_load_actions(bpy.types.Operator):
+    bl_idname = "tableth.load_actions"
+    bl_label = "Load Actions"
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        scn=context.scene
+        props = scn.tableth_properties
+        actions = props.actions
+
+        save_folder = get_addon_preferences().save_folder
+        # Create folder if needed
+        if not os.path.isdir(save_folder):
+            self.report({'INFO'}, "No Action to load")
+            return {'FINISHED'}
+
+        # Clear existings
+        actions.clear()
+
+        # Load new
+        action_files=return_files_with_pattern(save_folder, "action")
+        if action_files:
+            for f in action_files:
+                dataset=read_json(f)
+                new_action=actions.add()
+                set_properties_from_dataset(dataset, new_action)
+                for c in dataset["commands"]:
+                    new_command=new_action.commands.add()
+                    set_properties_from_dataset(c, new_command)
+        
+            self.report({'INFO'}, "Actions Loaded")
+        else:
+            self.report({'INFO'}, "No Action to load")
+
+        return {'FINISHED'}
+
+
 ### REGISTER ---
 
 def register():
     bpy.utils.register_class(TABLETH_OT_save_actions)
+    bpy.utils.register_class(TABLETH_OT_load_actions)
 
 def unregister():
     bpy.utils.unregister_class(TABLETH_OT_save_actions)
+    bpy.utils.unregister_class(TABLETH_OT_load_actions)

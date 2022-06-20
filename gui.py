@@ -56,7 +56,9 @@ def draw_gui(context, container, type):
         container.label(text="No Actions", icon="INFO")
     row=container.row(align=True)
     row.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
+    row.separator()
     row.operator("tableth.save_actions", text="", icon="DISK_DRIVE")
+    row.operator("tableth.load_actions", text="", icon="FILE_REFRESH")
 
 
 # SIDEBAR ACTION PANEL
@@ -157,7 +159,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
         col=box.column(align=True)
         col.label(text="Actions", icon="MEMORY")
         row=col.row(align=False)
-        row.template_list("TABLETH_UL_action_slots", "", props, "actions", props, "action_index", rows=5)
+        row.template_list("TABLETH_UL_action_slots", "", props, "actions", props, "action_index", rows=6)
         subcol=row.column(align=True)
         subcol.operator("tableth.manage_actions",text="",icon="ADD").action="ADD"
         subcol.operator("tableth.manage_actions",text="",icon="REMOVE").action="REMOVE"
@@ -166,6 +168,7 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
         subcol.operator("tableth.manage_actions",text="",icon="TRIA_DOWN").action="DOWN"
         subcol.separator()
         subcol.operator("tableth.save_actions", text="", icon="DISK_DRIVE")
+        subcol.operator("tableth.load_actions", text="", icon="FILE_REFRESH")
 
         if active_action:
             subbox=box.box()
