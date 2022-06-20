@@ -54,7 +54,9 @@ def draw_gui(context, container, type):
             idx+=1
     if not idx or idx==0:
         container.label(text="No Actions", icon="INFO")
-    container.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
+    row=container.row(align=True)
+    row.operator("tableth.manage_commands_popup", text="Manage", icon="TOOL_SETTINGS")
+    row.operator("tableth.save_actions", text="", icon="DISK_DRIVE")
 
 
 # SIDEBAR ACTION PANEL
@@ -155,12 +157,15 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
         col=box.column(align=True)
         col.label(text="Actions", icon="MEMORY")
         row=col.row(align=False)
-        row.template_list("TABLETH_UL_action_slots", "", props, "actions", props, "action_index", rows=4)
+        row.template_list("TABLETH_UL_action_slots", "", props, "actions", props, "action_index", rows=5)
         subcol=row.column(align=True)
         subcol.operator("tableth.manage_actions",text="",icon="ADD").action="ADD"
         subcol.operator("tableth.manage_actions",text="",icon="REMOVE").action="REMOVE"
+        subcol.separator()
         subcol.operator("tableth.manage_actions",text="",icon="TRIA_UP").action="UP"
         subcol.operator("tableth.manage_actions",text="",icon="TRIA_DOWN").action="DOWN"
+        subcol.separator()
+        subcol.operator("tableth.save_actions", text="", icon="DISK_DRIVE")
 
         if active_action:
             subbox=box.box()
@@ -208,17 +213,20 @@ class TABLETH_OT_manage_commands_popup(bpy.types.Operator):
             if props.recording!=-1:
                 op=row.operator("tableth.recording", text="", icon="LOOP_BACK")
                 op.action="RESET"
-
+            
+            col.separator()
             row=col.row(align=False)
             row.template_list("TABLETH_UL_command_slots", "", active_action, "commands", active_action, "command_index", rows=3)
             subcol=row.column(align=True)
             subcol.operator("tableth.manage_commands",text="",icon="ADD").action="ADD"
             subcol.operator("tableth.manage_commands",text="",icon="REMOVE").action="REMOVE"
+            subcol.separator()
             subcol.operator("tableth.manage_commands",text="",icon="TRIA_UP").action="UP"
             subcol.operator("tableth.manage_commands",text="",icon="TRIA_DOWN").action="DOWN"
 
             if idx!=-1 and idx<len(active_action.commands):
                 active_command = active_action.commands[idx]
+                col.separator()
                 col.prop(active_command, "command")
                 col.prop(active_command, "name")
 
